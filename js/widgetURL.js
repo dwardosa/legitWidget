@@ -14,9 +14,7 @@ var legitWidget = function(global) {
 
         var widgetExpanded = false;
         var infoPopupVisible = false;
-        var otherPopupVisible = false;
-        var economicalPopupVisible = false;
-        var politicalPopupVisible = false;
+        var isLegit;
 
 
         var configuration = {    
@@ -31,15 +29,9 @@ var legitWidget = function(global) {
          arrowUp: 'arrow-up',
          arrowUpBorder: 'arrow-upBackgroundBorder',
          arrowUpBorderHolder: 'infoPopupArrowBackgroundBorder',
-         otherPopup: 'otherPopupContainer',
-         otherPopupArrow: 'otherPopupArrow',
-         otherPopupArrowBorderHolder: 'otherPopupArrowBackgroundBorder',
-         economicalPopup: 'economicalPopupContainer',
-         economicalPopupArrow: 'economicalPopupArrow',
-         economicalPopupArrowBorderHolder: 'economicalPopupArrowBackgroundBorder',
-         politicalPopup: 'politicalPopupContainer',
-         politicalPopupArrow: 'politicalPopupArrow',
-         politicalPopupArrowBorderHolder: 'politicalPopupArrowBackgroundBorder'
+         upSelected: 'upVoteSelected',
+         downSelected: 'downVoteSelected',
+         urlForm: 'urlFormHolder'
          },
          ids:{
            widgetId:'legitWidget',
@@ -57,14 +49,14 @@ var legitWidget = function(global) {
            expandWidgetId: 'expandWidget',
            additonalInfoDivid: 'additionalInfoHolder',
            chevronId: 'chevron',
-           infoPopupId: 'infoPopup',
-           otherPopupId: 'otherPopup',
-           economicalPopupId: 'economicalPopup',
-           politicalPopupId: 'politicalPopup'
+           inputURLId: 'inputURL',
+           submitButtonId: 'submitBtn',
+           urlInputId: 'urlInput'
+           
         } 
         },
             timeout:2000,
-            stylesheetURL: 'css/style.css'
+            stylesheetURL: 'css/styleWidgetURL.css'
         };
     
     
@@ -98,41 +90,8 @@ var legitWidget = function(global) {
         downVoteDiv.appendChild(downVoteTriangle);
         
         //Creating div to hold additional info for expanding widget
-        var additionalInfoDiv = createDiv(configuration.CSS.ids.additonalInfoDivid);
-         
-        // Creating political info holder div
-        var politicalHolderDiv = createDiv(configuration.CSS.ids.politicsHolderId,configuration.CSS.classes.infoHolderClass,'Politics');
-        var politicalInfoArrowDiv = createDiv(configuration.CSS.ids.politicsInfoArrow,configuration.CSS.classes.infoArrow);
-      
-        //Appending the CSS info traingle to the div and then div into holder div
-        politicalHolderDiv.appendChild(politicalInfoArrowDiv);
-        additionalInfoDiv.appendChild(politicalHolderDiv);
-        
-        // Create political info popup
-        var politicalInfoHolderDiv = createPopup('political',configuration.CSS.ids.politicalPopupId,configuration.CSS.classes.politicalPopup,configuration.CSS.classes.politicalPopupArrow,configuration.CSS.classes.arrowUp,configuration.CSS.classes.politicalPopupArrowBorderHolder,configuration.CSS.classes.arrowUpBorder);
-      
-        // Creating political info holder div
-        var economicHolderDiv = createDiv(configuration.CSS.ids.economicsHolderId,configuration.CSS.classes.infoHolderClass,'Economics');
-        var economicsInfoArrowDiv = createDiv(configuration.CSS.ids.economicsInfoArrow,configuration.CSS.classes.infoArrow);
-
-        //Appending the CSS info traingle to the div
-        economicHolderDiv.appendChild(economicsInfoArrowDiv);
-        additionalInfoDiv.appendChild(economicHolderDiv);
-        
-        // Create div for holding info
-        var economicalInfoHolderDiv = createPopup('economical',configuration.CSS.ids.economicalPopupId,configuration.CSS.classes.economicalPopup,configuration.CSS.classes.economicalPopupArrow,configuration.CSS.classes.arrowUp,configuration.CSS.classes.economicalPopupArrowBorderHolder,configuration.CSS.classes.arrowUpBorder);
-
-        // Creating political info holder div and then div into holder div
-        var otherHolderDiv = createDiv(configuration.CSS.ids.otherHolderId,configuration.CSS.classes.infoHolderClass,'Other');
-        var otherInfoArrowDiv = createDiv(configuration.CSS.ids.otherInfoArrow,configuration.CSS.classes.infoArrow);
-
-        //Appending the CSS info traingle to the div and then div into holder div
-        otherHolderDiv.appendChild(otherInfoArrowDiv);
-        additionalInfoDiv.appendChild(otherHolderDiv);
-        
-        // Create div for holding info
-        var otherInfoHolderDiv = createPopup('other',configuration.CSS.ids.otherPopupId,configuration.CSS.classes.otherPopup,configuration.CSS.classes.otherPopupArrow,configuration.CSS.classes.arrowUp,configuration.CSS.classes.otherPopupArrowBorderHolder,configuration.CSS.classes.arrowUpBorder);
-
+        var additionalInfoDiv = createDiv(configuration.CSS.ids.additonalInfoDivid);         
+     
         // Creating info holder div
         var infoDiv = createDiv(configuration.CSS.ids.infoDivId,'','<strong>i</strong>');
   
@@ -146,79 +105,104 @@ var legitWidget = function(global) {
         configuration.CSS.classes.arrowUp,
         configuration.CSS.classes.arrowUpBorderHolder,
         configuration.CSS.classes.arrowUpBorder);
+        
+        //Create URL form div
+        var urlForm = createUrlForm(configuration.CSS.classes.urlForm, configuration.CSS.ids.urlInputId, configuration.CSS.ids.submitButtonId);
      
 
         var expandWidgetDiv = createDiv(configuration.CSS.ids.expandWidgetId);
         var chevron = createDiv(configuration.CSS.ids.chevronId,configuration.CSS.classes.chevron);
         expandWidgetDiv.appendChild(chevron);
         
-        //CLICK EVENT
+     
+        // Adding to DOM
+        container.appendChild(widgetDiv);
+
+        var widget = document.getElementById(configuration.CSS.ids.widgetId);
+
+        // Setting HTML for the widget and making it visible by setting display block
+        widget.innerHTML = '<strong class="infoHolder" style="padding:5px;">Legit?</strong>';
+        widget.style.display = 'inline-block'; 
+        widget.appendChild(upVoteDiv);
+        widget.appendChild(downVoteDiv);
+        widget.appendChild(urlForm);
+        widget.appendChild(additionalInfoDiv);
+        widget.appendChild(expandWidgetDiv);
+        widget.appendChild(infoHolderDiv);
+        
+         //CLICK EVENT
         
         upVoteDiv.onclick = function(){
-            // URL Hardcoded atm
-            // var URL =  window.location.href;
-            
-            var URL = 'www.thedailymail.co.uk/';
-           
-           castVote(URL, 1);
+        
+                if(downVoteDiv.className === configuration.CSS.classes.downSelected)
+                {
+                    downVoteDiv.className = '';
+                    upVoteDiv.className = configuration.CSS.classes.upSelected;
+                }
+                else
+                {
+                   upVoteDiv.className = configuration.CSS.classes.upSelected; 
+                }
+                  
+            isLegit = true;
         };
         
+        // Setting down vote selection by adding class an setting isLegit value
         downVoteDiv.onclick = function(){
-            // URL Hardcoded atm
-            // var URL =  window.location.href;
+ 
+                if(upVoteDiv.className === configuration.CSS.classes.upSelected)
+                {
+                    upVoteDiv.className = '';
+                    downVoteDiv.className = configuration.CSS.classes.downSelected;
+                }
+                else
+                {
+                   downVoteDiv.className = configuration.CSS.classes.downSelected;
+                   
+                   
+                }
+
+                isLegit = false;
+        };
+        
+        //Getting and then setting click function for submit button
+        var submitButton = document.getElementById(configuration.CSS.ids.submitButtonId);
+        
+        submitButton.onclick = function(){
             
-            var URL = 'www.thedailymail.co.uk/';
-           
-            castVote(URL, 0);        
+            var urlInput = document.getElementById(configuration.CSS.ids.urlInputId);
+            
+            var url = urlInput.value;
+                        
+            if(isLegit === 'undefined')
+            {
+                alert('Please select legit or not using Green / Red triangles');
+            }
+
+            else if(url === '')
+            {
+                alert('Please enter a URL');
+            }
+            
+            else
+            {
+                castVote(url, isLegit,function(error,result){
+                    if(error)
+                    {
+                        alert('Error submitting vote');
+                    }
+                    else
+                    {
+                        alert(result);
+                    }
+
+                });  
+            
+            }
         };
        
-        politicalInfoArrowDiv.onclick = function(){
-                        
-            if(politicalPopupVisible)
-            {
-                $('#' + configuration.CSS.ids.politicalPopupId).fadeOut();
-                politicalPopupVisible = false;             
-            }
-            else
-            {
-                closeAllPopups();
-                $('#' + configuration.CSS.ids.politicalPopupId).fadeIn().css("display","block");
-                politicalPopupVisible = true;             
-            }
-        };
-        
-        economicsInfoArrowDiv.onclick = function(){
-            
-            if(economicalPopupVisible)
-            {
-                $('#' + configuration.CSS.ids.economicalPopupId).fadeOut();
-                economicalPopupVisible = false;             
-            }
-            else
-            {
-                closeAllPopups();
-                $('#' + configuration.CSS.ids.economicalPopupId).fadeIn().css("display","block");
-                economicalPopupVisible = true;             
-            }
-        };
-        
-        otherInfoArrowDiv.onclick = function(){
-            
-            
-            
-            if(otherPopupVisible)
-            {
-                $('#' + configuration.CSS.ids.otherPopupId).fadeOut();
-                otherPopupVisible = false;             
-            }
-            else
-            {
-                closeAllPopups();
-                $('#' + configuration.CSS.ids.otherPopupId).fadeIn().css("display","block");
-                otherPopupVisible = true;             
-            }
-        };
-        
+       
+       
         infoDiv.onclick = function(){
                        
             
@@ -256,24 +240,6 @@ var legitWidget = function(global) {
                  widgetExpanded = true;
              }
          };
-
-
-        // Adding to DOM
-        container.appendChild(widgetDiv);
-
-        var widget = document.getElementById(configuration.CSS.ids.widgetId);
-
-        // Setting HTML for the widget and making it visible by setting display block
-        widget.innerHTML = '<strong class="infoHolder" style="padding:5px;">Legit?</strong>';
-        widget.style.display = 'inline-block'; 
-        widget.appendChild(upVoteDiv);
-        widget.appendChild(downVoteDiv);
-        widget.appendChild(additionalInfoDiv);
-        widget.appendChild(expandWidgetDiv);
-        widget.appendChild(infoHolderDiv);
-        widget.appendChild(otherInfoHolderDiv);
-        widget.appendChild(economicalInfoHolderDiv);
-        widget.appendChild(politicalInfoHolderDiv);
   
   
   // HELPER FUNCTIONS WHICH NEED TO BE IN MAIN FUNCTION
@@ -286,29 +252,9 @@ var legitWidget = function(global) {
         {
             $('#' + configuration.CSS.ids.infoPopupId).fadeOut();
             infoPopupVisible = false; 
-        }
-        
-        if(otherPopupVisible)
-        {
-            $('#' + configuration.CSS.ids.otherPopupId).fadeOut();
-            otherPopupVisible = false;
-        }
-        
-        if(economicalPopupVisible)
-        {
-            $('#' + configuration.CSS.ids.economicalPopupId).fadeOut();
-            economicalPopupVisible = false;   
-        }
-         
-        if(politicalPopupVisible)
-        {
-            $('#' + configuration.CSS.ids.politicalPopupId).fadeOut();
-            politicalPopupVisible = false;          
-        }           
+        }        
     }
-  
    
-    
     return{
       config:configuration
      };
@@ -338,6 +284,34 @@ var legitWidget = function(global) {
         }
         
         return div; 
+    }
+    
+    // Creates the URL submission form in the DOM
+    function createUrlForm(holderClass, urlInputId, submitBtnId)
+    {
+        
+        var holder = document.createElement('Div');
+        holder.className = holderClass;
+        
+        // Creating the form, and input text and appending
+        var form = document.createElement('Form');
+        var inputText = document.createElement('Input');
+        inputText.setAttribute("type","text");
+        inputText.placeholder = "URL of Article...";
+        inputText.id = urlInputId;
+        inputText.size = 100;
+        form.appendChild(inputText);
+        
+        // Creating the submit button and appending to form
+        var submitButton = document.createElement('Input');
+        submitButton.setAttribute("type","submit");
+        submitButton.id = submitBtnId;
+        form.appendChild(submitButton);
+        
+        //Appending form to div
+        holder.appendChild(form);
+        
+        return holder;   
     }
     
     // Creates a popupbox from the passed variables
@@ -382,13 +356,14 @@ var legitWidget = function(global) {
     }
     
     // Casts a vote through AJAX call with supplied URL and vote to path /vote
-    function castVote(URL,upDown)
+    function castVote(URL, isLegit, callback)
     {   
+        
         //Creating an array to store data for POSTing with AJAX
         var dataObject = {};
         dataObject['URL'] = URL;
         
-        if(upDown === 1)
+        if(isLegit === true)
         {
             dataObject['upVote'] = 1;
         }
@@ -398,14 +373,14 @@ var legitWidget = function(global) {
         }
         
        var ajaxRequest =  $.ajax({
+                url: "http://localhost:1337/vote",
                 type: "POST",
-                url: "localhost:1337/vote",
                 data: dataObject
                 
-              })
+              });
          
         ajaxRequest.done(function( msg ) {
-          alert( "Data Saved: " + msg );
+          callback(null, "Vote succesfully cast");
         });
 
         ajaxRequest.fail(function( jqXHR, textStatus ) {
