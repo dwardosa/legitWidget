@@ -23,6 +23,16 @@ input[type="submit"] {
   -webkit-border-radius:3px;
   background-color: white;
 }
+
+input[type="button"] {
+  padding: 5px;
+  border: solid 1px #bdc3c7;
+  transition: box-shadow 0.3s;
+  border-radius: 3px;
+  -moz-border-radius:3px;
+  -webkit-border-radius:3px;
+  background-color: white;
+}
 input[type="text"] {
   padding: 5px;
   border: solid 1px #bdc3c7;
@@ -160,6 +170,18 @@ input[type="text"].focus {
    top:-1px;
 
 }
+
+#commentInput
+{
+    visibility: visible;
+    width: 90%;
+    margin:0 auto;   
+    
+}
+
+
+
+
 /* POP UP STYLINGS */
 
 .arrow-up {

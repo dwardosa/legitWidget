@@ -7,7 +7,7 @@ var legitWidget = function(global) {
         {
            var script = document.createElement('script');
            script.type = "text/javascript";
-           script.src = "http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js";
+           script.src = "http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js";
            document.getElementsByTagName('head')[0].appendChild(script);
         }
 
@@ -31,7 +31,8 @@ var legitWidget = function(global) {
          arrowUpBorderHolder: 'infoPopupArrowBackgroundBorder',
          upSelected: 'upVoteSelected',
          downSelected: 'downVoteSelected',
-         urlForm: 'urlFormHolder'
+         reviewFormHolder: 'reviewFormHolder',
+         rateItSpanClass: 'rateit'
          },
          ids:{
            widgetId:'legitWidget',
@@ -46,17 +47,23 @@ var legitWidget = function(global) {
            otherHolderId: 'otherInfo',
            otherInfoArrow: 'otherInfoArrow',
            infoDivId: 'infoCircle',
+            infoPopupId: 'infoPopup',
            expandWidgetId: 'expandWidget',
            additonalInfoDivid: 'additionalInfoHolder',
            chevronId: 'chevron',
            inputURLId: 'inputURL',
            submitButtonId: 'submitBtn',
-           urlInputId: 'urlInput'
-           
+           objectivetyScore:'objectivityStarScore',
+            accuracyScore:'accuracyStarScore',
+           enjoyabilityScore:'enjoyabilityStarScore'
         } 
         },
             timeout:2000,
-            stylesheetURL: 'css/styleWidgetURL.css'
+            stylesheetURL: 'css/styleFull.css',
+            rateItStylesheet: 'css/rateit.css',
+            rateItJs: 'js/jquery.rateit.js',
+            jqueryJs: 'js/jqueryMin.js'
+            
         };
     
     
@@ -70,6 +77,33 @@ var legitWidget = function(global) {
         stylesheet.href = configuration.stylesheetURL;
         stylesheet.media = "all";
         document.lastChild.firstChild.appendChild(stylesheet);
+        
+        // Create link element and add stylesheet
+        stylesheet = document.createElement("link");
+        stylesheet.rel = "stylesheet";
+        stylesheet.type = "text/css";
+        stylesheet.href = configuration.rateItStylesheet;
+        stylesheet.media = "all";
+        document.lastChild.firstChild.appendChild(stylesheet);
+
+        
+        // If loading external jquery failes
+        if(!window.jQuery)
+        {
+            // Create script element and add jquery
+            script = document.createElement("script");
+            script.type = "text/javascript";
+            script.src = configuration.jqueryJs;
+            script.media = "all";
+             document.lastChild.firstChild.appendChild(script);
+        }
+    
+    // Create script element and add rateit Js
+        script = document.createElement("script");
+        script.type = "text/javascript";
+        script.src = configuration.rateItJs;
+        script.media = "all";
+        document.lastChild.firstChild.appendChild(script);
 
         // Creating widget holder DIV
         var widgetDiv = createDiv(configuration.CSS.ids.widgetId);
@@ -92,6 +126,10 @@ var legitWidget = function(global) {
         //Creating div to hold additional info for expanding widget
         var additionalInfoDiv = createDiv(configuration.CSS.ids.additonalInfoDivid);         
      
+        //Create Review div
+        var reviewDiv = createReviewElements(configuration.CSS.classes.reviewFormHolder, configuration.CSS.ids.objectivetyScore, configuration.CSS.ids.enjoyabilityScore, configuration.CSS.ids.accuracyScore, configuration.CSS.classes.rateItSpanClass , configuration.CSS.ids.submitButtonId);
+        additionalInfoDiv.appendChild(reviewDiv);
+     
         // Creating info holder div
         var infoDiv = createDiv(configuration.CSS.ids.infoDivId,'','<strong>i</strong>');
   
@@ -106,10 +144,8 @@ var legitWidget = function(global) {
         configuration.CSS.classes.arrowUpBorderHolder,
         configuration.CSS.classes.arrowUpBorder);
         
-        //Create URL form div
-        var urlForm = createUrlForm(configuration.CSS.classes.urlForm, configuration.CSS.ids.urlInputId, configuration.CSS.ids.submitButtonId);
-     
-
+        
+        
         var expandWidgetDiv = createDiv(configuration.CSS.ids.expandWidgetId);
         var chevron = createDiv(configuration.CSS.ids.chevronId,configuration.CSS.classes.chevron);
         expandWidgetDiv.appendChild(chevron);
@@ -125,7 +161,7 @@ var legitWidget = function(global) {
         widget.style.display = 'inline-block'; 
         widget.appendChild(upVoteDiv);
         widget.appendChild(downVoteDiv);
-        widget.appendChild(urlForm);
+//        widget.appendChild(reviewDiv);
         widget.appendChild(additionalInfoDiv);
         widget.appendChild(expandWidgetDiv);
         widget.appendChild(infoHolderDiv);
@@ -133,6 +169,13 @@ var legitWidget = function(global) {
          //CLICK EVENT
         
         upVoteDiv.onclick = function(){
+            
+            var URL =  window.location.href;
+                        
+            $('#' + configuration.CSS.ids.additonalInfoDivid).fadeIn("slow").css("display","inline-block");
+                 $('#' + configuration.CSS.ids.expandWidgetId).css("top","-2px");
+                 $('#' + configuration.CSS.ids.chevronId).addClass(configuration.CSS.classes.chevronRoate);
+                 widgetExpanded = true;
         
                 if(downVoteDiv.className === configuration.CSS.classes.downSelected)
                 {
@@ -149,6 +192,13 @@ var legitWidget = function(global) {
         
         // Setting down vote selection by adding class an setting isLegit value
         downVoteDiv.onclick = function(){
+            
+            var URL =  window.location.href;
+                        
+                 $('#' + configuration.CSS.ids.additonalInfoDivid).fadeIn("slow").css("display","inline-block");
+                 $('#' + configuration.CSS.ids.expandWidgetId).css("top","-2px");
+                 $('#' + configuration.CSS.ids.chevronId).addClass(configuration.CSS.classes.chevronRoate);
+                 widgetExpanded = true;
  
                 if(upVoteDiv.className === configuration.CSS.classes.upSelected)
                 {
@@ -170,32 +220,41 @@ var legitWidget = function(global) {
         
         submitButton.onclick = function(){
             
-            var urlInput = document.getElementById(configuration.CSS.ids.urlInputId);
+            // NEED TO DO REVIEW POSTING HERE
+                       
+            var articleURL =  window.location.href;
+            var legit = null;
             
-            var url = urlInput.value;
-                        
-            if(isLegit === 'undefined')
+            var objectiveScore = document.getElementById(configuration.CSS.ids.objectivetyScore);
+             var accuracyScore = document.getElementById(configuration.CSS.ids.accuracyScore);
+              var enjoyableScore = document.getElementById(configuration.CSS.ids.enjoyabilityScore);
+             
+            var isObjective = objectiveScore.lastChild.getAttribute('aria-valuenow');
+            var isAccurate = accuracyScore.lastChild.getAttribute('aria-valuenow');
+            var isEnjoyable = enjoyableScore.lastChild.getAttribute('aria-valuenow');
+            
+            if(isLegit == false)
             {
-                alert('Please select legit or not using Green / Red triangles');
+               legit = 0;     
+               castVote(articleURL, true);
             }
+            
+            if(isLegit == true)
+            {
+                legit = 1;
+                 castVote(articleURL, true);
+            }
+            
+            
+            addReview(articleURL, legit, isObjective, isAccurate, isEnjoyable );
+            
 
-            else if(url === '')
-            {
-                alert('Please enter a URL');
-            }
-            
-            else
-            {
-                castVote(url, isLegit);  
-            
-            }
         };
        
        
        
-        infoDiv.onclick = function(){
-                       
-            
+      infoDiv.onclick = function(){
+                                   
             if(infoPopupVisible)
             {
                 $('#' + configuration.CSS.ids.infoPopupId).fadeOut();
@@ -230,7 +289,7 @@ var legitWidget = function(global) {
                  widgetExpanded = true;
              }
          };
-  
+ 
   
   // HELPER FUNCTIONS WHICH NEED TO BE IN MAIN FUNCTION
   
@@ -277,29 +336,44 @@ var legitWidget = function(global) {
     }
     
     // Creates the URL submission form in the DOM
-    function createUrlForm(holderClass, urlInputId, submitBtnId)
+    function createReviewElements(holderClass, objectivityId, enjoyabilityId, accuracyId, rateItClass, submitBtnId)
     {
         
         var holder = document.createElement('Div');
         holder.className = holderClass;
         
-        // Creating the form, and input text and appending
-        var form = document.createElement('Form');
-        var inputText = document.createElement('Input');
-        inputText.setAttribute("type","text");
-        inputText.placeholder = "URL of Article...";
-        inputText.id = urlInputId;
-        inputText.size = 100;
-        form.appendChild(inputText);
+        // Creating the objectivity star rating
+        var objectivitySpan = document.createElement('span');
+        objectivitySpan.className = rateItClass;
+        objectivitySpan.id = objectivityId;
+        objectivitySpan.innerHTML = 'Objectivity: ';
+        objectivitySpan.title = 'Does the article contain any bias or subjective statements?';
+        holder.appendChild(objectivitySpan);
+        
+         // Creating the objectivity star rating
+        var accuracySpace = document.createElement('span');
+        accuracySpace.className = rateItClass;
+        accuracySpace.id = accuracyId;
+        accuracySpace.innerHTML = 'Accuracy: ';
+        accuracySpace.title = 'Are the sources for factual information clearly listed so they can be verified in another source?';
+        holder.appendChild(accuracySpace);
+               
+        // Creating the enjoyabiltiy star rating
+        var enjoyabilitySpan = document.createElement('span');
+        enjoyabilitySpan.className = rateItClass;
+        enjoyabilitySpan.id = enjoyabilityId;
+        enjoyabilitySpan.innerHTML = 'Enjoyability: ';
+        enjoyabilitySpan.title = 'Is the article entertaining to read or is it boring?';
+        holder.appendChild(enjoyabilitySpan);             
+        
         
         // Creating the submit button and appending to form
         var submitButton = document.createElement('Input');
-        submitButton.setAttribute("type","submit");
+        submitButton.setAttribute("type","button");
         submitButton.id = submitBtnId;
-        form.appendChild(submitButton);
-        
-        //Appending form to div
-        holder.appendChild(form);
+        submitButton.value = 'Submit';
+        holder.appendChild(submitButton);
+
         
         return holder;   
     }
@@ -314,7 +388,7 @@ var legitWidget = function(global) {
         
             switch (type) {
             case 'info':
-                data = "Please use your knowledge and the extra information provided to make an informed, objective view on the legitimacy of this article. Things to consider: <ul><li>Is there an obvious bias?</li><li>Is the author giving evidence?</li><li>Does it read like opinion or fact?</li><li>Is it a balanced or one sided article?</li></ul>";;
+                data = "Please take a moment to make an informed, analytical view on the legitimacy of this article. Things to consider: <ul><li>Is there an obvious bias?</li><li>Is the author giving facts or opinions?</li><li>Is it a balanced or one sided article?</li></ul>";
                 break;
             case 'other':
                 data = "Here is some very helpful  other information surrounding this news outlet";
@@ -369,8 +443,23 @@ var legitWidget = function(global) {
               });
          
         ajaxRequest.done(function( result ) {
-            alert('success');
-          alert( "Vote succesfully cast ArticleId: " + result);
+           var resObject =  JSON.parse(result);
+            var articleId = parseInt(resObject['articleId']);
+            alert('ArticleId: ' + articleId);
+            
+          var comment = prompt("Please share your thoughts on this article...");
+            if (comment != null) {
+                var author = prompt("Your name...");
+                if(author != null)
+                {
+                    addComment(articleId, author, comment);
+                }
+                else
+                {
+                    addComment(articleId, 'Anonymous', comment);
+                }
+                
+            }
         });
 
         ajaxRequest.fail(function( jqXHR, textStatus ) {
@@ -379,5 +468,65 @@ var legitWidget = function(global) {
                 
         
     }
+
     
+function addComment(id, author, comment )
+{
+
+    //Getting text values
+    var commentText = comment;
+    var commentAuthor = author;
+    var articleId = id;
+
+
+
+
+    alert('Adding comment by: ' + commentAuthor + " text: " + commentText + " ArticleId: " + articleId); 
+
+      var request = $.ajax({
+            url: "http://localhost:1337/addCommentForArticle",
+            type: "POST",
+            data: { commentAuthor : commentAuthor,
+                    commentText : commentText,
+                    articleId : articleId}
+          });
+
+          request.done(function(result) {
+             alert('Vote and comment successfully added!');
+          });
+
+           request.fail(function( jqXHR, textStatus ) {
+               alert('Error adding vote and comment');       
+          });
+
+}
+
     
+    //Performs Ajax request for /addReviewForArticle with supplied values 
+function addReview(articleURL, isLegit, isObjective, isFactual, isEnjoyable )
+{
+
+
+  alert('Adding Review for ' + articleURL + ' isLegit: ' + isLegit + ' isObjective: ' + isObjective + ' isFactual: ' + isFactual + ' isEnjoyable: ' + isEnjoyable);
+
+
+      var request = $.ajax({
+            url: "http://localhost:1337/addReviewForArticle",
+            type: "POST",
+            data: { URL :  articleURL,
+                    isLegit : isLegit,
+                    isObjective : isObjective,
+                    isFactual : isFactual,
+                    isEnjoyable : isEnjoyable,}
+          });
+
+          request.done(function(result) {
+             alert('Review successfully added!');
+          });
+
+           request.fail(function( jqXHR, textStatus ) {
+               alert('Error adding review');       
+          });
+
+}
+   

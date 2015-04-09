@@ -51,7 +51,8 @@ var legitWidget = function(global) {
            chevronId: 'chevron',
            inputURLId: 'inputURL',
            submitButtonId: 'submitBtn',
-           urlInputId: 'urlInput'
+           urlInputId: 'urlInput',
+           commentInputId: 'commentInput'
            
         } 
         },
@@ -230,6 +231,13 @@ var legitWidget = function(global) {
                  widgetExpanded = true;
              }
          };
+         
+         var urlInput = document.getElementById('urlInput');
+         
+         urlInput.onFocus = function(){
+             document.getElementById('#commentInput').visibility = 'visible';
+             
+         };
   
   
   // HELPER FUNCTIONS WHICH NEED TO BE IN MAIN FUNCTION
@@ -294,9 +302,11 @@ var legitWidget = function(global) {
         
         // Creating the submit button and appending to form
         var submitButton = document.createElement('Input');
-        submitButton.setAttribute("type","submit");
+        submitButton.setAttribute("type","button");
         submitButton.id = submitBtnId;
+        submitButton.value = 'Submit';
         form.appendChild(submitButton);
+
         
         //Appending form to div
         holder.appendChild(form);
@@ -369,8 +379,23 @@ var legitWidget = function(global) {
               });
          
         ajaxRequest.done(function( result ) {
-            alert('success');
-          alert( "Vote succesfully cast ArticleId: " + result);
+           var resObject =  JSON.parse(result);
+            var articleId = parseInt(resObject['articleId']);
+            alert('ArticleId: ' + articleId);
+            
+          var comment = prompt("Please share your thoughts on this article...");
+            if (comment != null) {
+                var author = prompt("Your name...");
+                if(author != null)
+                {
+                    addComment(articleId, author, comment);
+                }
+                else
+                {
+                    addComment(articleId, 'Anonymous', comment);
+                }
+                
+            }
         });
 
         ajaxRequest.fail(function( jqXHR, textStatus ) {
@@ -379,5 +404,38 @@ var legitWidget = function(global) {
                 
         
     }
+
+    
+function addComment(id, author, comment )
+{
+
+    //Getting text values
+    var commentText = comment;
+    var commentAuthor = author;
+    var articleId = id;
+
+
+
+
+    alert('Adding comment by: ' + commentAuthor + " text: " + commentText + " ArticleId: " + articleId); 
+
+      var request = $.ajax({
+            url: "http://localhost:1337/addCommentForArticle",
+            type: "POST",
+            data: { commentAuthor : commentAuthor,
+                    commentText : commentText,
+                    articleId : articleId}
+          });
+
+          request.done(function(result) {
+             alert('Vote successfully added!');
+          });
+
+           request.fail(function( jqXHR, textStatus ) {
+               alert('Error adding vote');       
+          });
+
+}
+
     
     

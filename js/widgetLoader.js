@@ -5,7 +5,7 @@ Works with multiple widget calls in a page
 */
 (function(global) {
 
-var widgetUrl = 'js/widgetURL.js';
+var widgetUrl = 'js/widgetFull.js';
 
   // Globals
   if(!global.Widget) { global.Widget = {}; };

@@ -6,7 +6,7 @@
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
     background: #ecf0f1;
-    height:20px;
+    height:25px;
     line-height: 20px;
     font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
     color:#2c3e50;
@@ -15,8 +15,18 @@
 /* FORM STYLING */
 
 input[type="submit"] {
-  padding: 10px;
-  border: solid 1px rgb(38,38,38);
+  padding: 5px;
+  border: solid 1px #bdc3c7;
+  transition: box-shadow 0.3s;
+  border-radius: 3px;
+  -moz-border-radius:3px;
+  -webkit-border-radius:3px;
+  background-color: white;
+}
+
+input[type="button"] {
+  padding: 5px;
+  border: solid 1px #bdc3c7;
   transition: box-shadow 0.3s;
   border-radius: 3px;
   -moz-border-radius:3px;
@@ -24,13 +34,14 @@ input[type="submit"] {
   background-color: white;
 }
 input[type="text"] {
-  padding: 10px;
-  border: solid 1px #dcdcdc;
+  padding: 5px;
+  border: solid 1px #bdc3c7;
   transition: box-shadow 0.3s, border 0.3s;
    border-radius: 3px;
   -moz-border-radius:3px;
   -webkit-border-radius:3px;
-  border: solid 1px rgb(38,38,38);
+  border: solid 1px #bdc3c7;
+  margin-right: 5px;
 }
 input[type="text"]:focus,
 input[type="text"].focus {
@@ -38,17 +49,14 @@ input[type="text"].focus {
   box-shadow: 0 0 5px 1px #969696;
 }
 
-input[type='textarea']{
-     padding: 10px;
-  border: solid 1px #dcdcdc;
-  transition: box-shadow 0.3s, border 0.3s;
-   border-radius: 3px;
-  -moz-border-radius:3px;
-  -webkit-border-radius:3px;
-  border: solid 1px rgb(38,38,38); 
-    
-}
 
+.urlFormHolder
+{
+    display:inline-block;
+    margin-left: 20px;
+    position: relative;
+    top: -8px;
+}
 
 
 
@@ -88,21 +96,40 @@ input[type='textarea']{
 #upVote
 {
     display: inline-block;
-    /* padding-left:10px; */
-    padding-bottom: 0px;
+    margin-left:10px;
+    padding: 6px;
     position: relative;
-    top:-4px;
-    border: 1px solid green;
+    top:-1px;
+    cursor:pointer;
+}
+
+.upVoteSelected
+{
+    border: 1px solid rgb(47,193,95);
+    border-radius: 5px;
+    -moz-border-radius:5px;
+    -webkit-border-radius:5px;
 }
 
 #downVote
 {
     display: inline-block;
-    padding-left:10px;
-    padding-bottom: 0px;
+    margin-left:10px;
+    padding: 6px;
     position: relative;
-    top:-5px;
+    top:-2px;
+    cursor:pointer;
 }
+
+.downVoteSelected
+{
+    border: 1px solid rgb(218,59,44);
+    border-radius: 5px;
+    -moz-border-radius:5px;
+    -webkit-border-radius:5px;
+}
+
+
 
 #additionalInfoHolder
 {
@@ -114,7 +141,7 @@ input[type='textarea']{
     display: inline-block;
     padding-left:10px;
     position: relative;
-    top:-5px;
+    top: -10px;
     
 }
 
@@ -133,7 +160,7 @@ input[type='textarea']{
     margin-right:5px;
     color:#95a5a6;
     position: relative;
-    top:-5px;
+    top: -7px;
     cursor: pointer;
 }
 
@@ -145,6 +172,52 @@ input[type='textarea']{
    top:-1px;
 
 }
+
+#commentInput
+{
+    visibility: visible;
+    width: 90%;
+    margin:0 auto;   
+    
+}
+
+/* Review Styling */
+.reviewFormHolder
+{
+    display:inline-block;
+}
+
+#enjoyabilityStarScore
+{
+    padding:10px;
+    position: relative;
+    top: -8px;
+}
+
+#accuracyStarScore
+{
+    padding:10px;
+    position: relative;
+    top: -8px;
+    text-align: top;
+}
+
+#objectivityStarScore
+{
+    padding:10px;
+    position: relative;
+    top: -8px;
+    text-align: top;
+}
+
+#submitBtn
+{
+    position:relative;
+    top:-8px;
+    background: #ecf0f1;
+}
+
+
 
 
 
@@ -201,7 +274,7 @@ input[type='textarea']{
   border:1px solid #bdc3c7;
   position: relative;
   display: none;
-  right: -239px;
+  right: -556px;
   z-index: 10;
   background-color: #ecf0f1;
   opacity: 1;
@@ -347,3 +420,13 @@ input[type='textarea']{
     -webkit-transform: rotate(180deg); /* Chrome, Safari, Opera */
     transform: rotate(180deg);
 }
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 27-Feb-2015, 12:22:13
+    Author     : edward_bowyer
+*/
+
