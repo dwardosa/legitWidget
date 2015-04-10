@@ -437,7 +437,7 @@ var legitWidget = function(global) {
         }
         
        var ajaxRequest =  $.ajax({
-                url: "http://localhost:1337/vote",
+                url: "52.16.25.190/vote",
                 type: "POST",
                 data: dataObject           
               });
@@ -478,13 +478,10 @@ function addComment(id, author, comment )
     var commentAuthor = author;
     var articleId = id;
 
-
-
-
     alert('Adding comment by: ' + commentAuthor + " text: " + commentText + " ArticleId: " + articleId); 
 
       var request = $.ajax({
-            url: "http://localhost:1337/addCommentForArticle",
+            url: "52.16.25.190/addCommentForArticle",
             type: "POST",
             data: { commentAuthor : commentAuthor,
                     commentText : commentText,
@@ -506,12 +503,10 @@ function addComment(id, author, comment )
 function addReview(articleURL, isLegit, isObjective, isFactual, isEnjoyable )
 {
 
-
   alert('Adding Review for ' + articleURL + ' isLegit: ' + isLegit + ' isObjective: ' + isObjective + ' isFactual: ' + isFactual + ' isEnjoyable: ' + isEnjoyable);
 
-
       var request = $.ajax({
-            url: "http://localhost:1337/addReviewForArticle",
+            url: "52.16.25.190/addReviewForArticle",
             type: "POST",
             data: { URL :  articleURL,
                     isLegit : isLegit,
